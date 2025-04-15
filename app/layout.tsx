@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Montserrat,Montserrat_Subrayada } from "next/font/google";
 import "./globals.css";
+import { NavBar } from "./_components/nav";
+import { ThemeProvider } from "@/components/theme.provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const MontserraSans = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const MontserratSub = Montserrat_Subrayada({
+  variable: "--font-montserrat-subrayada",
   subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -23,11 +26,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${MontserraSans.variable} ${MontserratSub.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NavBar />
+            {children}
+          </ThemeProvider>
       </body>
     </html>
   );

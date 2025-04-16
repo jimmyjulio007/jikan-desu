@@ -8,13 +8,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
 import LoadingIndicator from './loadingIndicator'
+import { Nav } from '@/lib/constant'
 
-const Nav = [
-    {id: 1, name: "Accueil", link: "/"},
-    {id: 2, name: "liste", link: "/list"},
-    {id: 3, name: "nouveau", link: "/new"},
-    {id: 4, name: "Bientot", link: "/soon"},
-]
 
 const menuVariants = {
     hidden: { opacity: 0, y: -20 },

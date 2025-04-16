@@ -8,6 +8,8 @@
       {
         "link-name": "off"
       }
-    ]
+    ],
+    "axe/structure": "off",
+    "no-inline-styles": "off"
   }
 }

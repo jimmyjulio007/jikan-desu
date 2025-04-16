@@ -7,6 +7,7 @@ import { AnimatePresence,motion } from 'motion/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
+import LoadingIndicator from './loadingIndicator'
 
 const Nav = [
     {id: 1, name: "Accueil", link: "/"},
@@ -37,11 +38,20 @@ export const NavBar = () => {
     <nav className='flex justify-between m-auto px-10 py-4'>
         <p className='text-2xl font-sans font-semibold bg-gradient-to-r from-fuchsia-500 to-cyan-600 bg-clip-text text-transparent'>Jikan Desu</p>
         <ul className='max-md:hidden flex items-center gap-4 font-sans font-semibold text-lg uppercase'>
-        {
-            Nav.map((Item, id) => (
-                <Link href={Item.link} className={path === Item.link ? "font-mono text-fuchsia-500" : ""} key={id}>{Item.name}</Link>
-            ))
-        }
+        {Nav.map((item, index) => (
+  <Link
+    key={index}
+    href={item.link}
+    prefetch={false}
+    className={`flex items-center gap-2  ${
+      path === item.link ? "text-fuchsia-500" : ""
+    }`}
+  >
+    {item.name}
+    <LoadingIndicator />
+  </Link>
+))}
+
         </ul>
         <Toggle class='max-sm:hidden' />
         <div className='flex flex-col items-end min-sm:hidden'>
@@ -56,6 +66,7 @@ export const NavBar = () => {
                      animate={{ opacity: 1, scale: 1 }}
                      exit={{ opacity: 0, scale: 0 }}>
                         {Item.name}
+                        <LoadingIndicator />
                         </motion.span>
                     </Link>
                 </motion.div>

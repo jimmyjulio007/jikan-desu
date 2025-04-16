@@ -4,14 +4,6 @@ import Link from 'next/link'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { Button } from '@/components/ui/button';
 import LoadingIndicator from './_components/loadingIndicator';
-import { Metadata } from 'next';
-
-
-
-export const metadata: Metadata = {
-    title: "Not Found",
-    description: "404 Forbiden",
-};
  
 export default function NotFound() {
   return (
@@ -23,7 +15,7 @@ export default function NotFound() {
       autoplay
     />
     <Button variant={"outline"} className='mt-4'>
-      <Link href="/" className='inline-flex items-center font-semibold font-sans uppercase gapt-2'>Accueil <LoadingIndicator /></Link>
+      <Link href="/" className='inline-flex items-center font-semibold font-sans uppercase gapt-4'>Accueil <LoadingIndicator /></Link>
     </Button>
     </div>
   )

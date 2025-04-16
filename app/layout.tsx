@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat,Montserrat_Subrayada } from "next/font/google";
+import { Montserrat} from "next/font/google";
 import "./globals.css";
 import { NavBar } from "./_components/nav";
 import { ThemeProvider } from "@/components/theme.provider";
@@ -9,11 +9,7 @@ const MontserraSans = Montserrat({
   subsets: ["latin"],
 });
 
-const MontserratSub = Montserrat_Subrayada({
-  variable: "--font-montserrat-subrayada",
-  subsets: ["latin"],
-  weight: "400",
-});
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${MontserraSans.variable} ${MontserratSub.variable} antialiased`}
+        className={`${MontserraSans.variable} antialiased`}
       >
         <ThemeProvider
             attribute="class"

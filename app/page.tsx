@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
-
-import { Suspense, useEffect, useState } from "react";
+// app/page.tsx (ou une autre route Server Component)
 import { Button } from "@/components/ui/button";
 import { Eye, Link2, Star, StarIcon } from "lucide-react";
 import Image from "next/image";
@@ -9,7 +7,12 @@ import Link from "next/link";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Badge } from "@/components/ui/badge";
 import { HyperText } from "@/components/magicui/hyper-text";
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@radix-ui/react-tooltip";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@radix-ui/react-tooltip";
 import {
   Pagination,
   PaginationContent,
@@ -17,34 +20,28 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
+import { Suspense } from "react";
 import { Loader } from "./_components/loader";
-
 
 const ITEMS_PER_PAGE = 9;
 
-export default function Home() {
-  const [posts, setPosts] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+async function getData() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/top/anime`, {
+    cache: "no-store",
+  });
+  const json = await res.json();
+  return json.data || [];
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/top/anime', {cache: 'no-store'})
-      const json = await data.json();
-      setPosts(json.data || []);
-    };
-    fetchData();
-  }, []);
+export default async function Home({ searchParams }: { searchParams?: Promise<{ page: string }> }) {
+  const posts = await getData();
 
+  const currentPage = Number((await searchParams)?.page || 1);
   const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
   const currentItems = posts.slice(start, end);
-
-  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-
-  const changePage = (page: number) => setCurrentPage(page);
 
   return (
     <>
@@ -53,7 +50,7 @@ export default function Home() {
       </h2>
 
       <div className="grid grid-cols-1 items-start md:grid-cols-2 lg:grid-cols-3 md:items-center justify-center w-full px-10 py-14 gap-10">
-      <Suspense fallback={<Loader />}>
+        <Suspense fallback={<Loader />}>
         {currentItems.map((post: any) => (
           <MagicCard className="rounded-lg" key={post.mal_id}>
             <div className="flex shrink flex-col gap-8 p-4 font-semibold font-sans max-h-[400px] md:max-h-[310px]">
@@ -65,7 +62,6 @@ export default function Home() {
                   alt={post.title}
                   width={100}
                   height={100}
-                  loading="lazy"
                 />
                 <p className="max-w-[400px] max-sm:text-xs line-clamp-1">{post.synopsis}</p>
                 <div className="flex flex-wrap gap-1">
@@ -80,7 +76,11 @@ export default function Home() {
                 <div className="flex items-center gap-2">
                   <Star />
                   <span>{post.score}</span>
-                  {post.broadcast.string && <Badge className="max-sm:text-xs" variant={"secondary"}>{post.broadcast.string}</Badge>}
+                  {post.broadcast.string && (
+                    <Badge className="max-sm:text-xs" variant={"secondary"}>
+                      {post.broadcast.string}
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 max-sm:pb-5">
                   <p>{post.type}</p>
@@ -90,13 +90,14 @@ export default function Home() {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                      <Link href={`/anime/${post.mal_id}`}>
-                        <Button size={'sm'} variant="outline">
-                          <Eye />
-                        </Button></Link>
+                        <Link href={`/anime/${post.mal_id}`}>
+                          <Button size={"sm"} variant="outline">
+                            <Eye />
+                          </Button>
+                        </Link>
                       </TooltipTrigger>
                       <TooltipContent sideOffset={5} align="end">
-                        <Badge variant={'secondary'}>Read more</Badge>
+                        <Badge variant={"secondary"}>Read more</Badge>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -104,12 +105,14 @@ export default function Home() {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant={"ghost"}>
-                          <a href={post.trailer.url} target="_blank"><Link2 /></a>
+                        <Button variant={"ghost"} asChild>
+                          <a href={post.trailer.url} target="_blank">
+                            <Link2 />
+                          </a>
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent sideOffset={5} align="end">
-                        <Badge variant={'destructive'}>let&apos;s see the trailer</Badge>
+                        <Badge variant={"destructive"}>Voir le trailer</Badge>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -123,20 +126,32 @@ export default function Home() {
 
       <div className="flex justify-center items-center gap-4 pb-10">
         <Pagination>
-      <PaginationContent>
-        <PaginationItem className="cursor-pointer" aria-disabled={currentPage === 1}>
-          <PaginationPrevious onClick={prevPage} aria-disabled={currentPage === 1} />
-        </PaginationItem>
-        <PaginationItem className="cursor-pointer">
-        {Array.from({ length: totalPages }, (_, i) => (
-          <PaginationLink key={i} onClick={() => changePage(i + 1)} isActive={currentPage === i + 1}>{i + 1}</PaginationLink>
-        ))}
-        </PaginationItem>
-        <PaginationItem className="cursor-pointer">
-          <PaginationNext onClick={nextPage} aria-disabled={currentPage === totalPages} />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+          <PaginationContent className="space-x-4">
+            <PaginationItem className="cursor-pointer">
+              <PaginationPrevious
+                href={`/?page=${Math.max(currentPage - 1, 1)}`}
+                aria-disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            <PaginationItem className="cursor-pointer space-x-2">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <PaginationLink
+                  key={i}
+                  href={`/?page=${i + 1}`}
+                  isActive={currentPage === i + 1}
+                >
+                  {i + 1}
+                </PaginationLink>
+              ))}
+            </PaginationItem>
+            <PaginationItem className="cursor-pointer">
+              <PaginationNext
+                href={`/?page=${Math.min(currentPage + 1, totalPages)}`}
+                aria-disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </>
   );

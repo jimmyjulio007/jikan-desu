@@ -1,6 +1,7 @@
 import { LoaderContent } from "@/app/_components/loaderContent";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 const Article = dynamic(() => import("@/app/_components/article"), {
   loading: () => <LoaderContent />,
@@ -67,7 +68,9 @@ export default async function Page({
 
     return(
         <div className="w-full flex flex-col gap-4 items-center py-10">
+          <Suspense key={article} fallback={<LoaderContent />}>
           <Article article={article} />
+          </Suspense>
         </div>
     ) 
   }

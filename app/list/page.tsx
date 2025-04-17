@@ -1,12 +1,19 @@
-import { Metadata } from 'next';
+type SearchParams = Promise<{
+  query: string | "baba";
+  page: string | "1";
+  sort?: string;
+}>
 
-export const metadata: Metadata = {
-    title: "List",
-    description: "Tout les listes des vos animés préférerer se trouve ici",
-};
+export default async function List({searchParams}: {searchParams: SearchParams}) {
 
-export default function List(){
+
+  const param = await searchParams
+
   return (
-    <div>List</div>
+    <div>
+    <h1>Résultats pour : {param.query}</h1>
+    <p>Page actuelle : {param.page}</p>
+    <p>Trier par : {param.sort}</p>
+  </div>
   )
 }

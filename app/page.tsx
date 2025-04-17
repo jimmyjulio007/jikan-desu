@@ -23,16 +23,9 @@ import {
 } from "@/components/ui/pagination";
 import { Suspense } from "react";
 import { Loader } from "./_components/loader";
+import { getData } from "@/lib/action";
 
 const ITEMS_PER_PAGE = 9;
-
-async function getData() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/top/anime`, {
-    cache: "no-store",
-  });
-  const json = await res.json();
-  return json.data || [];
-}
 
 export default async function Home({ searchParams }: { searchParams?: Promise<{ page: string }> }) {
   const posts = await getData();
@@ -49,7 +42,7 @@ export default async function Home({ searchParams }: { searchParams?: Promise<{ 
         <HyperText>Top Anime</HyperText> <StarIcon />
       </h2>
 
-      <div className="grid grid-cols-1 items-start md:grid-cols-2 lg:grid-cols-3 md:items-center justify-center w-full px-10 py-14 gap-10">
+      <div className="grid grid-cols-1 items-start md:grid-cols-2 lg:grid-cols-3 md:items-center justify-center w-full px-10 py-14 gap-10"> 
         <Suspense fallback={<Loader />}>
         {currentItems.map((post: any) => (
           <MagicCard className="rounded-lg" key={post.mal_id}>

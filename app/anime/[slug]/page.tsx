@@ -1,8 +1,10 @@
 import { LoaderContent } from "@/app/_components/loaderContent";
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
+const Article = dynamic(() => import("@/app/_components/article"), {
+  loading: () => <LoaderContent />,
+});
 
 
 export async function generateMetadata({
@@ -29,6 +31,23 @@ export async function generateMetadata({
   }
   
 
+  // export async function generateStaticParams() {
+    
+  //   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/top/anime`, { cache: 'force-cache' });
+
+  //   if(res.status === 404) {notFound()}
+
+  //   const anime = await res.json();
+
+  //   if (!anime) {
+  //       notFound();
+  //     }
+   
+  //   return anime.data.map((data: { title: string; }) => ({
+  //     slug: data.title,
+  //   }))
+  // }
+
 
 export default async function Page({
     params,
@@ -48,17 +67,7 @@ export default async function Page({
 
     return(
         <div className="w-full flex flex-col gap-4 items-center py-10">
-        <Suspense key={article.data.title} fallback={<LoaderContent />}>
-        <h2 className="font-sans text-4xl font-semibold text-center">{article.data.title}</h2>
-        <p className="max-w-[800px] text-lg font-semibold font-sans">{article.data.synopsis}</p>
-        <Image
-          src={article.data.images.jpg.large_image_url}
-          alt={article.data.title}
-          width={800}
-          height={600}
-        />
-        <span>{article.data.title}</span>
-        </Suspense>
+          <Article article={article} />
         </div>
     ) 
   }

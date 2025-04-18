@@ -13,8 +13,24 @@ const MontserraSans = Montserrat({
 
 
 export const metadata: Metadata = {
-  title: "Welcome to Jikan Desu",
-  description: "Your best platform to search for anime and manga",
+  title: "Jikan Desu",
+  description: "Explore & Discover Manga Like Never Before",
+  openGraph: {
+    title: "Jikan Desu",
+    description: "Explore & Discover Manga Like Never Before",
+    url: "https://jikan-desu.vercel.app/",
+    siteName: "Jikan Desu",
+    images: [
+      {
+        url: "https://jikan-desu.vercel.app/jikan-og.png",
+        width: 1200,
+        height: 630,
+        alt: "Jikan Desu Open Graph Image",
+      },
+    ],
+    locale: "mg_MG",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

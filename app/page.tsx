@@ -23,29 +23,59 @@ import {
 } from "@/components/ui/pagination";
 import { Suspense } from "react";
 import { Loader } from "./_components/loader";
-import { getData } from "@/lib/action";
+import { getAnime, getGenreAnime } from "@/lib/action";
 
 const ITEMS_PER_PAGE = 9;
 
-export default async function Home({ searchParams }: { searchParams?: Promise<{ page: string }> }) {
-  const posts = await getData();
+type Genre = {
+  mal_id: number;
+  name: string;
+};
 
-  const currentPage = Number((await searchParams)?.page || 1);
-  const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
+export default async function Home({ searchParams }: { searchParams:  Promise<{ page: string, genre: string }> }) {
+
+  
+  const posts = await getAnime();
+  const pageParam = (await searchParams)?.page || "1";
+
+  const genre = await getGenreAnime();
+
+  const genreParam = (await searchParams)?.genre || "";
+  const currentPage = Number(pageParam);
+
+  const filteredPosts = genreParam
+    ? posts.filter((post: { genres: Genre[]; }) =>
+        post.genres.some((g: any) => g.name.toLowerCase() === genreParam.toLowerCase())
+      )
+    : posts;
+
+  const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
-  const currentItems = posts.slice(start, end);
+  const currentItems = filteredPosts.slice(start, end);
 
+
+  
   return (
     <>
-      <h2 className="flex items-center gap-2 font-sans font-semibold text-3xl pl-10 pt-5 uppercase">
-        <HyperText>Top Anime</HyperText> <StarIcon />
-      </h2>
+      
+      <p className="text-center text-3xl font-sans font-semibold pt-10">Category</p>
+      <div className="flex flex-wrap items-center justify-center w-full px-10 py-5">
+        {genre.slice(0, 10).map((genre: Genre) => (
+          <Badge variant={"secondary"} key={genre.mal_id} className="m-2  text-sm font-sans">
+            <Link  href={`/?genre=${genre.name}`} prefetch>{genre.name}</Link>
+          </Badge>
+        ))}
+        <Button variant={"outline"} size={"sm"}>Voir plus</Button>
+      </div>
 
+      <h2 className="flex items-center gap-2 font-sans font-semibold text-3xl pl-10 pt-5 uppercase">
+        <HyperText>Your Anime</HyperText> <StarIcon />
+      </h2>
       <div className="grid grid-cols-1 items-start md:grid-cols-2 lg:grid-cols-3 md:items-center justify-center w-full px-10 py-14 gap-10"> 
         <Suspense fallback={<Loader />}>
         {currentItems.map((post: any) => (
-          <MagicCard className="rounded-lg" key={post.mal_id}>
+          <MagicCard className="rounded-lg flex-1" key={post.mal_id}>
             <div className="flex shrink flex-col gap-8 p-4 font-semibold font-sans max-h-[400px] md:max-h-[310px]">
               <p className="max-sm:text-sm uppercase">{post.title}</p>
               <div className="flex flex-auto gap-2">
@@ -56,7 +86,7 @@ export default async function Home({ searchParams }: { searchParams?: Promise<{ 
                   width={100}
                   height={100}
                 />
-                <p className="max-w-[400px] max-sm:text-xs line-clamp-1">{post.synopsis}</p>
+                {post.synopsis && <p className="max-w-[400px] max-sm:text-xs">{post.synopsis.slice(0,100)}</p>}
                 <div className="flex flex-wrap gap-1">
                   {post.themes.map((theme: any) => (
                     <Button variant={"ghost"} key={theme.mal_id} className="text-sm flex-auto">
@@ -78,7 +108,7 @@ export default async function Home({ searchParams }: { searchParams?: Promise<{ 
                 <div className="flex items-center gap-2 max-sm:pb-5">
                   <p>{post.type}</p>
                   <Badge variant={"outline"}>{post.episodes}</Badge>
-                  <Badge>{post.status}</Badge>
+                  <Badge variant={"destructive"}>{post.status}</Badge>
 
                   <TooltipProvider>
                     <Tooltip>
@@ -118,33 +148,40 @@ export default async function Home({ searchParams }: { searchParams?: Promise<{ 
       </div>
 
       <div className="flex justify-center items-center gap-4 pb-10">
-        <Pagination>
+        {totalPages > 1 && (
+          <Pagination>
           <PaginationContent className="space-x-4">
-            <PaginationItem className="cursor-pointer">
+            {currentPage > 1 && (
+              <PaginationItem className="cursor-pointer">
               <PaginationPrevious
-                href={`/?page=${Math.max(currentPage - 1, 1)}`}
+                href={`/?page=${Math.max(currentPage - 1, 1)}${genreParam ? `&genre=${genreParam}` : ''}`}
                 aria-disabled={currentPage === 1}
               />
             </PaginationItem>
+            )}
             <PaginationItem className="cursor-pointer space-x-2">
               {Array.from({ length: totalPages }, (_, i) => (
                 <PaginationLink
                   key={i}
-                  href={`/?page=${i + 1}`}
+                  href={`/?page=${i + 1}${genreParam ? `&genre=${genreParam}` : ''}`}
                   isActive={currentPage === i + 1}
                 >
                   {i + 1}
                 </PaginationLink>
               ))}
             </PaginationItem>
-            <PaginationItem className="cursor-pointer">
+            {currentPage < totalPages && (
+              <PaginationItem className="cursor-pointer">
               <PaginationNext
-                href={`/?page=${Math.min(currentPage + 1, totalPages)}`}
+                href={`/?page=${Math.min(currentPage + 1, totalPages)}${genreParam ? `&genre=${genreParam}` : ''}`}
                 aria-disabled={currentPage === totalPages}
               />
             </PaginationItem>
+            )}
           </PaginationContent>
         </Pagination>
+        )}
+        
       </div>
     </>
   );

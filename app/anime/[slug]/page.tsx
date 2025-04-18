@@ -1,4 +1,5 @@
 import { LoaderContent } from "@/app/_components/loaderContent";
+import { getTopAnimeById } from "@/lib/action";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -11,23 +12,12 @@ const Article = dynamic(() => import("@/app/_components/article"), {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: number }>
 }) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/anime/${(await params).slug}`, {cache: 'force-cache'});
-
-    if(res.status === 404) {notFound()}
-
-
-    const slugs = await res.json();
-
-    console.log(slugs)
-  
-    if (!slugs) {
-        notFound();
-      }
+    const slugs = await getTopAnimeById((params))
   
     return {
-      title: slugs.data.title,
+      title: slugs.title,
     };
   }
   
@@ -53,7 +43,7 @@ export async function generateMetadata({
 export default async function Page({
     params,
   }: {
-    params: Promise<{ slug: string }>
+    params: Promise<{ slug: number }>
   }) {
 
 
@@ -61,15 +51,15 @@ export default async function Page({
 
     if(!res.ok) {notFound()}
 
-    const article = await res.json();
+    const animeContent = await res.json();
 
 
-    if(!article) {notFound()}
+    if(!animeContent) {notFound()}
 
     return(
         <div className="w-full flex flex-col gap-4 items-center py-10">
-          <Suspense key={article} fallback={<LoaderContent />}>
-          <Article article={article} />
+          <Suspense key={animeContent} fallback={<LoaderContent />}>
+          <Article article={animeContent} />
           </Suspense>
         </div>
     ) 

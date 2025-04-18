@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 export async function getAnime() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/anime?status=upcoming`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/anime`, {
       cache: "force-cache",
     });
     const json = await res.json();

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Eye, Link2, Star, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { MagicCard } from "@/components/magicui/magic-card";
 import { Badge } from "@/components/ui/badge";
 import { HyperText } from "@/components/magicui/hyper-text";
 import {
@@ -24,6 +23,7 @@ import {
 import { Suspense } from "react";
 import { Loader } from "./_components/loader";
 import { getAnime, getGenreAnime } from "@/lib/action";
+import { Card } from "@/components/magicui/card";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -31,6 +31,7 @@ type Genre = {
   mal_id: number;
   name: string;
 };
+
 
 export default async function Home({ searchParams }: { searchParams:  Promise<{ page: string, genre: string }> }) {
 
@@ -40,14 +41,22 @@ export default async function Home({ searchParams }: { searchParams:  Promise<{ 
 
   const genre = await getGenreAnime();
 
+  console.log(genre);
+
   const genreParam = (await searchParams)?.genre || "";
   const currentPage = Number(pageParam);
 
-  const filteredPosts = genreParam
-    ? posts.filter((post: { genres: Genre[]; }) =>
-        post.genres.some((g: any) => g.name.toLowerCase() === genreParam.toLowerCase())
-      )
-    : posts;
+
+  const filteredPosts = posts.filter((post: any) => {
+    const matchesGenre = genreParam 
+      ? post.genres.some((g: any) => g.name.toLowerCase() === genreParam.toLowerCase())
+      : true;
+
+    return matchesGenre;
+  });
+
+
+
 
   const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -68,14 +77,13 @@ export default async function Home({ searchParams }: { searchParams:  Promise<{ 
         ))}
         <Button variant={"outline"} size={"sm"}>Voir plus</Button>
       </div>
-
       <h2 className="flex items-center gap-2 font-sans font-semibold text-3xl pl-10 pt-5 uppercase">
         <HyperText>Your Anime</HyperText> <StarIcon />
       </h2>
       <div className="grid grid-cols-1 items-start md:grid-cols-2 lg:grid-cols-3 md:items-center justify-center w-full px-10 py-14 gap-10"> 
         <Suspense fallback={<Loader />}>
         {currentItems.map((post: any) => (
-          <MagicCard className="rounded-lg flex-1" key={post.mal_id}>
+          <Card post={post.mal_id} key={post.mal_id}>
             <div className="flex shrink flex-col gap-8 p-4 font-semibold font-sans max-h-[400px] md:max-h-[310px]">
               <p className="max-sm:text-sm uppercase">{post.title}</p>
               <div className="flex flex-auto gap-2">
@@ -125,24 +133,27 @@ export default async function Home({ searchParams }: { searchParams:  Promise<{ 
                     </Tooltip>
                   </TooltipProvider>
 
+                  {post.trailer.url &&
+
                   <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant={"ghost"} asChild>
-                          <a href={post.trailer.url} target="_blank">
-                            <Link2 />
-                          </a>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link href={`${post.trailer.url}`}>
+                        <Button size={"sm"} variant="outline">
+                          <Link2 />
                         </Button>
-                      </TooltipTrigger>
-                      <TooltipContent sideOffset={5} align="end">
-                        <Badge variant={"destructive"}>Voir le trailer</Badge>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent sideOffset={5} align="end">
+                      <Badge variant={"secondary"}>more</Badge>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                }
                 </div>
               </div>
             </div>
-          </MagicCard>
+            </Card>
         ))}
         </Suspense>
       </div>

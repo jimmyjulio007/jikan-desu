@@ -9,6 +9,17 @@ export async function getAnime() {
   }
 
 
+  export async function getAnimeByStatus({ params }: { params:  string }) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/anime/?status=${params}`, {
+      cache: "force-cache",
+    });
+    const json = await res.json();
+    return json.data || [];
+  }
+
+  
+
+
   export async function getUpcomingAnime() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/seasons/upcoming`, {
       cache: "force-cache",
@@ -51,7 +62,7 @@ export async function getAnime() {
     return json.data || [];
   }
 
-export async function getTopAnimeById(params: Promise<{ slug: number }>) {
+export async function getAnimeById(params: Promise<{ slug: number }>) {
   const { slug } = await params;
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/anime/${slug}`, {
     cache: "force-cache",
@@ -60,5 +71,35 @@ export async function getTopAnimeById(params: Promise<{ slug: number }>) {
   if (!json) {
     notFound();
   }
+  return json.data || [];
+}
+
+
+
+
+
+export async function getManga() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/manga`, {
+    cache: "force-cache",
+  });
+  const json = await res.json();
+  return json.data || [];
+}
+
+
+export async function getGenreManga() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/genres/manga`, {
+    cache: "force-cache",
+  });
+  const json = await res.json();
+  return json.data || [];
+}
+
+
+export async function getProducer() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/producers`, {
+    cache: "force-cache",
+  });
+  const json = await res.json();
   return json.data || [];
 }

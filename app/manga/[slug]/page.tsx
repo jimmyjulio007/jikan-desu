@@ -13,7 +13,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>
 }) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/anime/${(await params).slug}`, {cache: 'force-cache'});
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/manga/${(await params).slug}`, {cache: 'force-cache'});
 
     if(res.status === 404) {notFound()}
 
@@ -57,7 +57,7 @@ export default async function Page({
   }) {
 
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/anime/${(await params).slug}`, {cache: 'force-cache'});
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/manga/${(await params).slug}`, {cache: 'force-cache'});
 
     if(!res.ok) {notFound()}
 

@@ -24,6 +24,7 @@ import { Suspense } from "react";
 import { Loader } from "../_components/loader";
 import {  getGenreManga, getManga } from "@/lib/action";
 import { Card } from "@/components/magicui/card";
+import { Metadata } from "next";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -32,6 +33,11 @@ type Genre = {
   name: string;
 };
 
+
+export const metadata: Metadata = {
+  title: "manga",
+  description: "Tout vos Manga préférerer se trouve ici",
+};
 
 export default async function Manga({ searchParams }: { searchParams:  Promise<{ page: string, genre: string }> }) {
 

@@ -24,6 +24,7 @@ import { Suspense } from "react";
 import { Loader } from "../_components/loader";
 import {  getGenreAnime, getTopAnime } from "@/lib/action";
 import { Card } from "@/components/magicui/card";
+import { Metadata } from "next";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -32,6 +33,11 @@ type Genre = {
   name: string;
 };
 
+
+export const metadata: Metadata = {
+  title: "Best Anime",
+  description: "Tout vos meilleur animés préférerer se trouve ici",
+};
 
 export default async function TopAnime({ searchParams }: { searchParams:  Promise<{ page: string, genre: string }> }) {
 

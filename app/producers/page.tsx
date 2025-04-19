@@ -24,8 +24,15 @@ import { Suspense } from "react";
 import { Loader } from "../_components/loader";
 import {  getProducer } from "@/lib/action";
 import { Card } from "@/components/magicui/card";
+import { Metadata } from "next";
 
 const ITEMS_PER_PAGE = 9;
+
+
+export const metadata: Metadata = {
+  title: "Producers",
+  description: "Tout vos producteur préférerer se trouve ici",
+};
 
 
 export default async function Producer({ searchParams }: { searchParams:  Promise<{ page: string, genre: string }> }) {

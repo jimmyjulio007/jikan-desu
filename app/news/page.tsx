@@ -24,12 +24,19 @@ import { Suspense } from "react";
 import { Loader } from "../_components/loader";
 import {  getGenreAnime, getSeasonNowAnime } from "@/lib/action";
 import { Card } from "@/components/magicui/card";
+import { Metadata } from "next";
 
 const ITEMS_PER_PAGE = 9;
 
 type Genre = {
   mal_id: number;
   name: string;
+};
+
+
+export const metadata: Metadata = {
+  title: "Nouveauté",
+  description: "Tout vos nouveaux animés préférerer se trouve ici",
 };
 
 

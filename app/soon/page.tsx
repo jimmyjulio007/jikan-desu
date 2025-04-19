@@ -24,6 +24,7 @@ import { Suspense } from "react";
 import { Loader } from "../_components/loader";
 import {  getGenreAnime, getUpcomingAnime } from "@/lib/action";
 import { Card } from "@/components/magicui/card";
+import { Metadata } from "next";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -32,6 +33,10 @@ type Genre = {
   name: string;
 };
 
+export const metadata: Metadata = {
+  title: "Bienton",
+  description: "Tout vos animés qui vas sortir se trouve ici",
+};
 
 export default async function SoonAnime({ searchParams }: { searchParams:  Promise<{ page: string, genre: string }> }) {
 
